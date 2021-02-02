@@ -1,4 +1,4 @@
-package com.github.adetiamarhadi.greeting.client;
+package com.github.adetiamarhadi.calculator.client;
 
 import com.proto.calculator.CalculatorRequest;
 import com.proto.calculator.CalculatorResponse;
