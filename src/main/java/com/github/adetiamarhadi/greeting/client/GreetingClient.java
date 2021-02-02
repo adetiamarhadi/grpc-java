@@ -1,10 +1,7 @@
 package com.github.adetiamarhadi.greeting.client;
 
 import com.proto.dummy.DummyServiceGrpc;
-import com.proto.greet.GreetRequest;
-import com.proto.greet.GreetResponse;
-import com.proto.greet.GreetServiceGrpc;
-import com.proto.greet.Greeting;
+import com.proto.greet.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -22,6 +19,28 @@ public class GreetingClient {
 
         GreetServiceGrpc.GreetServiceBlockingStub greetClient = GreetServiceGrpc.newBlockingStub(channel);
 
+//        unary(greetClient);
+
+        serverStreaming(greetClient);
+
+        System.out.println("Shutting down channel");
+        channel.shutdown();
+    }
+
+    private static void serverStreaming(GreetServiceGrpc.GreetServiceBlockingStub greetClient) {
+        GreetManyTimesRequest greetManyTimesRequest = GreetManyTimesRequest.newBuilder()
+                .setGreeting(Greeting.newBuilder()
+                        .setFirstName("Adetia")
+                        .setLastName("Marhadi")
+                        .build())
+                .build();
+
+        greetClient.greetManyTimes(greetManyTimesRequest).forEachRemaining(greetManyTimesResponse -> {
+            System.out.println(greetManyTimesResponse.getResult());
+        });
+    }
+
+    private static void unary(GreetServiceGrpc.GreetServiceBlockingStub greetClient) {
         Greeting greeting = Greeting.newBuilder()
                 .setFirstName("Adetia")
                 .setLastName("Marhadi")
@@ -33,8 +52,5 @@ public class GreetingClient {
 
         GreetResponse greetResponse = greetClient.greet(greetRequest);
         System.out.println("result: " + greetResponse.getResult());
-
-        System.out.println("Shutting down channel");
-        channel.shutdown();
     }
 }
