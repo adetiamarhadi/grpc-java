@@ -14,6 +14,16 @@ message CalculatorResponse {
   int64 result = 1;
 }
 
+message NumberRequest {
+  int64 number = 1;
+}
+
+message NumberResponse {
+  int64 result = 1;
+}
+
 service CalculatorService {
   rpc sum(CalculatorRequest) returns (CalculatorResponse) {};
+
+  rpc PrimeNumber(NumberRequest) returns (stream NumberResponse) {};
 }

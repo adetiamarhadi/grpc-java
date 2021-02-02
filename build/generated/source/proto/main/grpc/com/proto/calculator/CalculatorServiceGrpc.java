@@ -45,6 +45,37 @@ public final class CalculatorServiceGrpc {
     return getSumMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.proto.calculator.NumberRequest,
+      com.proto.calculator.NumberResponse> getPrimeNumberMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "PrimeNumber",
+      requestType = com.proto.calculator.NumberRequest.class,
+      responseType = com.proto.calculator.NumberResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<com.proto.calculator.NumberRequest,
+      com.proto.calculator.NumberResponse> getPrimeNumberMethod() {
+    io.grpc.MethodDescriptor<com.proto.calculator.NumberRequest, com.proto.calculator.NumberResponse> getPrimeNumberMethod;
+    if ((getPrimeNumberMethod = CalculatorServiceGrpc.getPrimeNumberMethod) == null) {
+      synchronized (CalculatorServiceGrpc.class) {
+        if ((getPrimeNumberMethod = CalculatorServiceGrpc.getPrimeNumberMethod) == null) {
+          CalculatorServiceGrpc.getPrimeNumberMethod = getPrimeNumberMethod =
+              io.grpc.MethodDescriptor.<com.proto.calculator.NumberRequest, com.proto.calculator.NumberResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "PrimeNumber"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.proto.calculator.NumberRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.proto.calculator.NumberResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new CalculatorServiceMethodDescriptorSupplier("PrimeNumber"))
+              .build();
+        }
+      }
+    }
+    return getPrimeNumberMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -100,6 +131,13 @@ public final class CalculatorServiceGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSumMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void primeNumber(com.proto.calculator.NumberRequest request,
+        io.grpc.stub.StreamObserver<com.proto.calculator.NumberResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getPrimeNumberMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -109,6 +147,13 @@ public final class CalculatorServiceGrpc {
                 com.proto.calculator.CalculatorRequest,
                 com.proto.calculator.CalculatorResponse>(
                   this, METHODID_SUM)))
+          .addMethod(
+            getPrimeNumberMethod(),
+            io.grpc.stub.ServerCalls.asyncServerStreamingCall(
+              new MethodHandlers<
+                com.proto.calculator.NumberRequest,
+                com.proto.calculator.NumberResponse>(
+                  this, METHODID_PRIME_NUMBER)))
           .build();
     }
   }
@@ -134,6 +179,14 @@ public final class CalculatorServiceGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSumMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void primeNumber(com.proto.calculator.NumberRequest request,
+        io.grpc.stub.StreamObserver<com.proto.calculator.NumberResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncServerStreamingCall(
+          getChannel().newCall(getPrimeNumberMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -155,6 +208,14 @@ public final class CalculatorServiceGrpc {
     public com.proto.calculator.CalculatorResponse sum(com.proto.calculator.CalculatorRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSumMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public java.util.Iterator<com.proto.calculator.NumberResponse> primeNumber(
+        com.proto.calculator.NumberRequest request) {
+      return io.grpc.stub.ClientCalls.blockingServerStreamingCall(
+          getChannel(), getPrimeNumberMethod(), getCallOptions(), request);
     }
   }
 
@@ -182,6 +243,7 @@ public final class CalculatorServiceGrpc {
   }
 
   private static final int METHODID_SUM = 0;
+  private static final int METHODID_PRIME_NUMBER = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -203,6 +265,10 @@ public final class CalculatorServiceGrpc {
         case METHODID_SUM:
           serviceImpl.sum((com.proto.calculator.CalculatorRequest) request,
               (io.grpc.stub.StreamObserver<com.proto.calculator.CalculatorResponse>) responseObserver);
+          break;
+        case METHODID_PRIME_NUMBER:
+          serviceImpl.primeNumber((com.proto.calculator.NumberRequest) request,
+              (io.grpc.stub.StreamObserver<com.proto.calculator.NumberResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -266,6 +332,7 @@ public final class CalculatorServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new CalculatorServiceFileDescriptorSupplier())
               .addMethod(getSumMethod())
+              .addMethod(getPrimeNumberMethod())
               .build();
         }
       }
