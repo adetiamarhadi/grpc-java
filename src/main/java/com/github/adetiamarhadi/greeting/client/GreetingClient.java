@@ -6,6 +6,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -25,10 +26,51 @@ public class GreetingClient {
 
 //        serverStreaming(channel);
 
-        clientStreaming(channel);
+//        clientStreaming(channel);
+
+        serverClientStreaming(channel);
 
         System.out.println("Shutting down channel");
         channel.shutdown();
+    }
+
+    private static void serverClientStreaming(ManagedChannel channel) {
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        GreetServiceGrpc.GreetServiceStub client = GreetServiceGrpc.newStub(channel);
+
+        StreamObserver<GreetEveryoneRequest> requestStreamObserver = client.greetEveryone(new StreamObserver<>() {
+            @Override
+            public void onNext(GreetEveryoneResponse value) {
+                System.out.println("result: " + value.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        Arrays.asList("Cahyo", "Cahyadi", "Cangmuni", "Cahgiri", "Cahmeni").forEach(name -> requestStreamObserver.onNext(
+                GreetEveryoneRequest.newBuilder()
+                        .setGreeting(Greeting.newBuilder()
+                                .setFirstName(name)
+                                .build())
+                        .build()));
+
+        requestStreamObserver.onCompleted();
+
+        try {
+            latch.await(3, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void clientStreaming(ManagedChannel channel) {
