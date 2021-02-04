@@ -32,4 +32,6 @@ service CalculatorService {
   rpc PrimeNumber(NumberRequest) returns (stream NumberResponse) {};
 
   rpc average(stream NumberRequest) returns (AverageResponse) {};
+
+  rpc FindMaximum(stream NumberRequest) returns (stream NumberResponse) {};
 }

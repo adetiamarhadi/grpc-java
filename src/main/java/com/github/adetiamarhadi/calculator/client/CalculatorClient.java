@@ -5,6 +5,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -22,10 +23,48 @@ public class CalculatorClient {
 
 //        serverStreaming(channel);
 
-        clientStreaming(channel);
+//        clientStreaming(channel);
+
+        serverClientStreaming(channel);
 
         System.out.println("Shutting down channel");
         channel.shutdown();
+    }
+
+    private static void serverClientStreaming(ManagedChannel channel) {
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        CalculatorServiceGrpc.CalculatorServiceStub client = CalculatorServiceGrpc.newStub(channel);
+
+        StreamObserver<NumberRequest> requestStreamObserver = client.findMaximum(new StreamObserver<>() {
+            @Override
+            public void onNext(NumberResponse value) {
+                System.out.println("max number now is: " + value.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        Arrays.asList(1,5,3,6,2,20).forEach(number -> requestStreamObserver.onNext(NumberRequest.newBuilder()
+                .setNumber(number)
+                .build()));
+
+        requestStreamObserver.onCompleted();
+
+        try {
+            latch.await(3, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void clientStreaming(ManagedChannel channel) {

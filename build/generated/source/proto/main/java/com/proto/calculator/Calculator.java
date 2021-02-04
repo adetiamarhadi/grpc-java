@@ -53,14 +53,16 @@ public final class Calculator {
       " \001(\003\"$\n\022CalculatorResponse\022\016\n\006result\030\001 \001" +
       "(\003\"\037\n\rNumberRequest\022\016\n\006number\030\001 \001(\003\" \n\016N" +
       "umberResponse\022\016\n\006result\030\001 \001(\003\"!\n\017Average" +
-      "Response\022\016\n\006result\030\001 \001(\0012\354\001\n\021CalculatorS" +
+      "Response\022\016\n\006result\030\001 \001(\0012\270\002\n\021CalculatorS" +
       "ervice\022F\n\003sum\022\035.calculator.CalculatorReq" +
       "uest\032\036.calculator.CalculatorResponse\"\000\022H" +
       "\n\013PrimeNumber\022\031.calculator.NumberRequest" +
       "\032\032.calculator.NumberResponse\"\0000\001\022E\n\007aver" +
       "age\022\031.calculator.NumberRequest\032\033.calcula" +
-      "tor.AverageResponse\"\000(\001B\030\n\024com.proto.cal" +
-      "culatorP\001b\006proto3"
+      "tor.AverageResponse\"\000(\001\022J\n\013FindMaximum\022\031" +
+      ".calculator.NumberRequest\032\032.calculator.N" +
+      "umberResponse\"\000(\0010\001B\030\n\024com.proto.calcula" +
+      "torP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
