@@ -3,6 +3,7 @@ package com.github.adetiamarhadi.calculator.client;
 import com.proto.calculator.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 
 import java.util.Arrays;
@@ -25,10 +26,29 @@ public class CalculatorClient {
 
 //        clientStreaming(channel);
 
-        serverClientStreaming(channel);
+//        serverClientStreaming(channel);
+
+        returnError(channel);
 
         System.out.println("Shutting down channel");
         channel.shutdown();
+    }
+
+    private static void returnError(ManagedChannel channel) {
+
+        CalculatorServiceGrpc.CalculatorServiceBlockingStub serviceBlockingStub = CalculatorServiceGrpc
+                .newBlockingStub(channel);
+
+        int number = -1;
+
+        try {
+            serviceBlockingStub.squareRoot(SquareRootRequest.newBuilder()
+                    .setNumber(number)
+                    .build());
+        } catch (StatusRuntimeException e) {
+            System.out.println("Got an Error!");
+            e.printStackTrace();
+        }
     }
 
     private static void serverClientStreaming(ManagedChannel channel) {

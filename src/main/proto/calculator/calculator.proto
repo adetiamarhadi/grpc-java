@@ -26,6 +26,14 @@ message AverageResponse {
   double result = 1;
 }
 
+message SquareRootRequest {
+  int32 number = 1;
+}
+
+message SquareRootResponse {
+  double number_root = 1;
+}
+
 service CalculatorService {
   rpc sum(CalculatorRequest) returns (CalculatorResponse) {};
 
@@ -34,4 +42,6 @@ service CalculatorService {
   rpc average(stream NumberRequest) returns (AverageResponse) {};
 
   rpc FindMaximum(stream NumberRequest) returns (stream NumberResponse) {};
+
+  rpc SquareRoot(SquareRootRequest) returns (SquareRootResponse) {};
 }
