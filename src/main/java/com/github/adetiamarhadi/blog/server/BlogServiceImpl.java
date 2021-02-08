@@ -35,7 +35,7 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
                         .setAuthorId(blog.getAuthorId())
                         .setContent(blog.getContent())
                         .setTitle(blog.getTitle())
-                        .setId(blog.getId())
+                        .setId(id)
                         .build())
                 .build();
 
