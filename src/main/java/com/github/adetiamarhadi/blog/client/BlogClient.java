@@ -39,13 +39,22 @@ public class BlogClient {
                 .build();
 
         System.out.println("Sending request for update blog");
-        UpdateBlogRequest request = UpdateBlogRequest.newBuilder()
-                .setBlog(blog)
-                .build();
+        try {
 
-        UpdateBlogResponse response = stub.updateBlog(request);
-        System.out.println("result after updated");
-        System.out.println(response.toString());
+            UpdateBlogRequest request = UpdateBlogRequest.newBuilder()
+                    .setBlog(blog)
+                    .build();
+
+            UpdateBlogResponse response = stub.updateBlog(request);
+            System.out.println("result after updated");
+            System.out.println(response.toString());
+        } catch (StatusRuntimeException e) {
+            if (e.getStatus().getCode().equals(Status.Code.NOT_FOUND)) {
+                System.out.println("result search for blog id "+ blogId +": not found");
+            } else {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void readBlog(ManagedChannel channel, String blogId) {
