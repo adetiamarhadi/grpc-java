@@ -15,16 +15,41 @@ public class BlogClient {
                 .usePlaintext()
                 .build();
 
-        String blogId = createBlog(channel);
+//        String blogId = createBlog(channel);
 
-        readBlog(channel, blogId);
+//        readBlog(channel, blogId);
 //        readBlog(channel, "6020f649c796f97f5a83b4d1");
 //        readBlog(channel, "A1381XMHA");
         
-        updateBlog(channel, blogId);
+//        updateBlog(channel, blogId);
+        deleteBlog(channel, "6020dd43580404578320e4fe");
+        readBlog(channel, "6020dd43580404578320e4fe");
+        deleteBlog(channel, "6020dd43580404578320e4fe");
+        deleteBlog(channel, "A1381XMHA");
 
         System.out.println("Shutting down channel");
         channel.shutdown();
+    }
+
+    private static void deleteBlog(ManagedChannel channel, String blogId) {
+
+        BlogServiceGrpc.BlogServiceBlockingStub stub = BlogServiceGrpc.newBlockingStub(channel);
+
+        DeleteBlogRequest request = DeleteBlogRequest.newBuilder()
+                .setBlogId(blogId)
+                .build();
+
+        System.out.println("Sending request for delete blog");
+        try {
+            DeleteBlogResponse response = stub.deleteBlog(request);
+            System.out.println("deleted blog: " + response.getBlogId());
+        } catch (StatusRuntimeException e) {
+            if (e.getStatus().getCode().equals(Status.Code.NOT_FOUND)) {
+                System.out.println("result search for blog id "+ blogId +": not found");
+            } else {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void updateBlog(ManagedChannel channel, String blogId) {
