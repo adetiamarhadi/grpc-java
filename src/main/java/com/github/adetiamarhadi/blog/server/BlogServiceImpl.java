@@ -156,4 +156,17 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
             responseObserver.onCompleted();
         }
     }
+
+    @Override
+    public void listBlog(ListBlogRequest request, StreamObserver<ListBlogResponse> responseObserver) {
+
+        System.out.println("Received list blog request");
+
+        this.mongoCollection.find().iterator().forEachRemaining(document ->
+                responseObserver.onNext(ListBlogResponse.newBuilder()
+                        .setBlog(mapToBlog(document))
+                        .build()));
+
+        responseObserver.onCompleted();
+    }
 }
