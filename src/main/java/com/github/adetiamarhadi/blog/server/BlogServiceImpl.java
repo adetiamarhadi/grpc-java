@@ -54,7 +54,13 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
         String blogId = request.getBlogId();
 
         System.out.println("Find blog with id: " + blogId);
-        Document document = this.mongoCollection.find(Filters.eq("_id", new ObjectId(blogId))).first();
+
+        Document document = null;
+        try {
+            document = this.mongoCollection.find(Filters.eq("_id", new ObjectId(blogId))).first();
+        } catch (Exception e) {
+            System.out.println("something error: " + e.getMessage());
+        }
 
         if (null == document) {
 
