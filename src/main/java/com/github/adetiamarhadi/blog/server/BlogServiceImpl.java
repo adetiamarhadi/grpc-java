@@ -53,14 +53,7 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
 
         String blogId = request.getBlogId();
 
-        System.out.println("Find blog with id: " + blogId);
-
-        Document document = null;
-        try {
-            document = this.mongoCollection.find(Filters.eq("_id", new ObjectId(blogId))).first();
-        } catch (Exception e) {
-            System.out.println("something error: " + e.getMessage());
-        }
+        Document document = find(blogId);
 
         if (null == document) {
 
@@ -71,12 +64,7 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
         } else {
 
             System.out.println("Founded blog with id " + blogId);
-            Blog blog = Blog.newBuilder()
-                    .setAuthorId(document.getString("author_id"))
-                    .setContent(document.getString("content"))
-                    .setTitle(document.getString("title"))
-                    .setId(blogId)
-                    .build();
+            Blog blog = mapToBlog(document);
 
             System.out.println("Sending response");
             responseObserver.onNext(ReadBlogResponse.newBuilder()
@@ -84,5 +72,60 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
                     .build());
             responseObserver.onCompleted();
         }
+    }
+
+    @Override
+    public void updateBlog(UpdateBlogRequest request, StreamObserver<UpdateBlogResponse> responseObserver) {
+
+        System.out.println("Received update blog request");
+
+        Blog newBlog = request.getBlog();
+
+        String blogId = newBlog.getId();
+
+        Document document = find(blogId);
+        if (null == document) {
+
+            System.out.println("Blog with id "+ blogId +" not found");
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("the Blog ID was not found")
+                    .asRuntimeException());
+        } else {
+
+            Document newDocument = new Document("author_id", newBlog.getAuthorId())
+                    .append("title", newBlog.getTitle())
+                    .append("content", newBlog.getContent());
+
+            System.out.println("Updating blog");
+            this.mongoCollection.replaceOne(Filters.eq("_id", document.getObjectId("_id")), newDocument);
+
+            System.out.println("Blog updated. Sending the response");
+            responseObserver.onNext(UpdateBlogResponse.newBuilder()
+                    .setBlog(mapToBlog(newDocument))
+                    .build());
+            responseObserver.onCompleted();
+        }
+    }
+
+    private Blog mapToBlog(Document document) {
+        return Blog.newBuilder()
+                .setAuthorId(document.getString("author_id"))
+                .setContent(document.getString("content"))
+                .setTitle(document.getString("title"))
+                .setId(document.getObjectId("_id").toString())
+                .build();
+    }
+
+    private Document find(String blogId) {
+        System.out.println("Find blog with id: " + blogId);
+
+        Document document = null;
+        try {
+            document = this.mongoCollection.find(Filters.eq("_id", new ObjectId(blogId))).first();
+        } catch (Exception e) {
+            System.out.println("something error: " + e.getMessage());
+        }
+
+        return document;
     }
 }
