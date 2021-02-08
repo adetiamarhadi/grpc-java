@@ -18,11 +18,34 @@ public class BlogClient {
         String blogId = createBlog(channel);
 
         readBlog(channel, blogId);
-        readBlog(channel, "6020f649c796f97f5a83b4d1");
-        readBlog(channel, "A1381XMHA");
+//        readBlog(channel, "6020f649c796f97f5a83b4d1");
+//        readBlog(channel, "A1381XMHA");
+        
+        updateBlog(channel, blogId);
 
         System.out.println("Shutting down channel");
         channel.shutdown();
+    }
+
+    private static void updateBlog(ManagedChannel channel, String blogId) {
+
+        BlogServiceGrpc.BlogServiceBlockingStub stub = BlogServiceGrpc.newBlockingStub(channel);
+
+        Blog blog = Blog.newBuilder()
+                .setId(blogId)
+                .setAuthorId("Adetia Marhadi")
+                .setTitle("new gRPC Tutorial v2021")
+                .setContent("support for many languages v2021")
+                .build();
+
+        System.out.println("Sending request for update blog");
+        UpdateBlogRequest request = UpdateBlogRequest.newBuilder()
+                .setBlog(blog)
+                .build();
+
+        UpdateBlogResponse response = stub.updateBlog(request);
+        System.out.println("result after updated");
+        System.out.println(response.toString());
     }
 
     private static void readBlog(ManagedChannel channel, String blogId) {

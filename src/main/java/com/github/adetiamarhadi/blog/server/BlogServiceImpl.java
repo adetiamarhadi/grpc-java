@@ -94,7 +94,8 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
 
             Document newDocument = new Document("author_id", newBlog.getAuthorId())
                     .append("title", newBlog.getTitle())
-                    .append("content", newBlog.getContent());
+                    .append("content", newBlog.getContent())
+                    .append("_id", new ObjectId(blogId));
 
             System.out.println("Updating blog");
             this.mongoCollection.replaceOne(Filters.eq("_id", document.getObjectId("_id")), newDocument);
