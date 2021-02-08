@@ -22,13 +22,24 @@ public class BlogClient {
 //        readBlog(channel, "A1381XMHA");
         
 //        updateBlog(channel, blogId);
-        deleteBlog(channel, "6020dd43580404578320e4fe");
-        readBlog(channel, "6020dd43580404578320e4fe");
-        deleteBlog(channel, "6020dd43580404578320e4fe");
-        deleteBlog(channel, "A1381XMHA");
+//        deleteBlog(channel, "6020dd43580404578320e4fe");
+//        readBlog(channel, "6020dd43580404578320e4fe");
+//        deleteBlog(channel, "6020dd43580404578320e4fe");
+//        deleteBlog(channel, "A1381XMHA");
+        listBlog(channel);
 
         System.out.println("Shutting down channel");
         channel.shutdown();
+    }
+
+    private static void listBlog(ManagedChannel channel) {
+
+        BlogServiceGrpc.BlogServiceBlockingStub stub = BlogServiceGrpc.newBlockingStub(channel);
+
+        stub.listBlog(ListBlogRequest.newBuilder()
+                .build()).forEachRemaining(listBlogResponse ->
+                System.out.println(listBlogResponse.getBlog().toString()));
+
     }
 
     private static void deleteBlog(ManagedChannel channel, String blogId) {
