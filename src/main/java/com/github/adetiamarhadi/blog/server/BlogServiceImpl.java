@@ -4,12 +4,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.proto.blog.Blog;
-import com.proto.blog.BlogServiceGrpc;
-import com.proto.blog.CreateBlogRequest;
-import com.proto.blog.CreateBlogResponse;
+import com.mongodb.client.model.Filters;
+import com.proto.blog.*;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
 
@@ -20,6 +20,8 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
     @Override
     public void createBlog(CreateBlogRequest request, StreamObserver<CreateBlogResponse> responseObserver) {
 
+        System.out.println("Received create blog request");
+
         Blog blog = request.getBlog();
 
         Document document = new Document("author_id", blog.getAuthorId())
@@ -29,6 +31,7 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
         this.mongoCollection.insertOne(document);
 
         String id = document.getObjectId("_id").toString();
+        System.out.println("Blog created with id: " + id);
 
         CreateBlogResponse blogResponse = CreateBlogResponse.newBuilder()
                 .setBlog(Blog.newBuilder()
@@ -41,5 +44,39 @@ public class BlogServiceImpl extends BlogServiceGrpc.BlogServiceImplBase {
 
         responseObserver.onNext(blogResponse);
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void readBlog(ReadBlogRequest request, StreamObserver<ReadBlogResponse> responseObserver) {
+
+        System.out.println("Received read blog request");
+
+        String blogId = request.getBlogId();
+
+        System.out.println("Find blog with id: " + blogId);
+        Document document = this.mongoCollection.find(Filters.eq("_id", new ObjectId(blogId))).first();
+
+        if (null == document) {
+
+            System.out.println("Blog with id "+ blogId +" not found");
+            responseObserver.onError(Status.NOT_FOUND
+                    .withDescription("the Blog ID was not found")
+                    .asRuntimeException());
+        } else {
+
+            System.out.println("Founded blog with id " + blogId);
+            Blog blog = Blog.newBuilder()
+                    .setAuthorId(document.getString("author_id"))
+                    .setContent(document.getString("content"))
+                    .setTitle(document.getString("title"))
+                    .setId(blogId)
+                    .build();
+
+            System.out.println("Sending response");
+            responseObserver.onNext(ReadBlogResponse.newBuilder()
+                    .setBlog(blog)
+                    .build());
+            responseObserver.onCompleted();
+        }
     }
 }
